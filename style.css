@@ -1,0 +1,50 @@
+body{
+    background:#0f172a;
+    color:white;
+    font-family:Arial;
+    margin:0;
+    padding:0;
+}
+
+.container{
+    padding:40px;
+}
+
+h1{
+    font-size:42px;
+    margin-bottom:30px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+}
+
+.card{
+    background:#1e293b;
+    padding:20px;
+    border-radius:15px;
+}
+
+.result{
+    background:#334155;
+    padding:10px;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+.prediction-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+.prediction{
+    background:#2563eb;
+    padding:15px;
+    text-align:center;
+    border-radius:10px;
+    font-size:20px;
+    font-weight:bold;
+}
