@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: lottery-app
+    name: keralalot
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
