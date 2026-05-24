@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Kerala Lottery Intelligence — KLI</title>
+<title>KLIntel v3 — Kerala Lottery Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
@@ -16,495 +16,938 @@
   --green:#10b981;--green-dim:rgba(16,185,129,.1);
   --red:#ef4444;--red-dim:rgba(239,68,68,.1);
   --purple:#8b5cf6;--purple-dim:rgba(139,92,246,.1);
+  --cyan:#06b6d4;--cyan-dim:rgba(6,182,212,.1);
+  --orange:#f97316;
   --text:#f0f4f8;--text2:#94a3b8;--text3:#4a5568;
-  --r:10px;--r2:14px;
+  --r:10px;--r2:14px;--sb:228px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;top:-280px;left:50%;transform:translateX(-50%);width:900px;height:600px;background:radial-gradient(ellipse,rgba(240,180,41,.055) 0%,transparent 65%);pointer-events:none;z-index:0}
 
-/* Ambient background */
-.ambient{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.ambient::before{content:'';position:absolute;top:-300px;left:50%;transform:translateX(-50%);width:1000px;height:600px;background:radial-gradient(ellipse at center,rgba(240,180,41,.06) 0%,transparent 65%)}
-.ambient::after{content:'';position:absolute;bottom:-200px;right:-100px;width:600px;height:500px;background:radial-gradient(ellipse at center,rgba(59,130,246,.05) 0%,transparent 65%)}
+/* ─── Sidebar ─────────────────────────────────────────────────── */
+.sb{position:fixed;top:0;left:0;width:var(--sb);height:100vh;background:var(--surface);border-right:1px solid var(--border);z-index:200;display:flex;flex-direction:column}
+.sb-logo{padding:1.1rem;border-bottom:1px solid var(--border);flex-shrink:0}
+.sb-logo-row{display:flex;align-items:center;gap:.6rem}
+.sb-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),#a07010);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;box-shadow:0 0 14px rgba(240,180,41,.25)}
+.sb-logo h1{font-size:1rem;font-weight:700;letter-spacing:-.02em;line-height:1}
+.sb-logo h1 span{color:var(--gold)}
+.sb-ver{font-size:.58rem;color:var(--purple);background:var(--purple-dim);border:1px solid rgba(139,92,246,.22);border-radius:999px;padding:.08rem .42rem;margin-left:.3rem}
+.sb-sub{font-size:.6rem;color:var(--text3);margin-top:.12rem;letter-spacing:.06em;text-transform:uppercase}
+.sb-nav{padding:.6rem 0;flex:1;overflow-y:auto}
+.sb-nav::-webkit-scrollbar{display:none}
+.nav-sec{padding:.48rem 1.1rem .1rem;font-size:.57rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em}
+.ni{display:flex;align-items:center;gap:.58rem;padding:.52rem 1.1rem;font-size:.79rem;color:var(--text2);cursor:pointer;border-left:2px solid transparent;transition:all .13s;user-select:none}
+.ni:hover{color:var(--text);background:rgba(255,255,255,.025)}
+.ni.active{color:var(--gold);background:var(--gold-dim);border-left-color:var(--gold);font-weight:500}
+.ni svg{width:13px;height:13px;flex-shrink:0;opacity:.6}
+.ni.active svg,.ni:hover svg{opacity:1}
+.sb-foot{padding:.82rem 1.1rem;border-top:1px solid var(--border);flex-shrink:0}
+.draw-chip{background:var(--green-dim);border:1px solid rgba(16,185,129,.2);border-radius:var(--r);padding:.48rem .72rem;margin-bottom:.5rem}
+.draw-chip p:first-child{font-size:.59rem;color:var(--green);text-transform:uppercase;letter-spacing:.07em}
+.draw-chip p:last-child{font-size:.77rem;font-weight:600;color:var(--text);margin-top:.06rem}
+.auto-badge{display:flex;align-items:center;gap:.35rem;font-size:.61rem;color:var(--cyan);background:var(--cyan-dim);border:1px solid rgba(6,182,212,.2);border-radius:999px;padding:.22rem .6rem;margin-bottom:.45rem}
+.auto-dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
+.sb-note{font-size:.61rem;color:var(--text3);line-height:1.5}
+.sb-note a{color:var(--blue);text-decoration:none}
 
-/* Sidebar */
-.sidebar{position:fixed;top:0;left:0;width:220px;height:100vh;background:var(--surface);border-right:1px solid var(--border);z-index:100;display:flex;flex-direction:column;padding:0 0 1rem}
-.logo{padding:1.25rem 1.25rem 1rem;border-bottom:1px solid var(--border)}
-.logo h1{font-size:1.05rem;font-weight:700;letter-spacing:-.02em;color:var(--text)}
-.logo span{color:var(--gold)}
-.logo p{font-size:.68rem;color:var(--text3);margin-top:.2rem;letter-spacing:.06em;text-transform:uppercase}
-.nav{padding:.75rem 0;flex:1}
-.nav-item{display:flex;align-items:center;gap:.65rem;padding:.6rem 1.25rem;font-size:.82rem;color:var(--text2);cursor:pointer;transition:all .15s;border-left:2px solid transparent}
-.nav-item:hover{color:var(--text);background:rgba(255,255,255,.03)}
-.nav-item.active{color:var(--gold);background:var(--gold-dim);border-left-color:var(--gold)}
-.nav-icon{width:16px;height:16px;opacity:.7}
-.nav-item.active .nav-icon{opacity:1}
-.sidebar-footer{padding:1rem 1.25rem;border-top:1px solid var(--border)}
-.draw-badge{background:var(--green-dim);border:1px solid rgba(16,185,129,.2);border-radius:var(--r);padding:.65rem .85rem}
-.draw-badge p:first-child{font-size:.65rem;color:var(--green);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem}
-.draw-badge p:last-child{font-size:.82rem;font-weight:600;color:var(--text)}
-
-/* Main */
-.main{margin-left:220px;position:relative;z-index:1;min-height:100vh}
-.topbar{height:56px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 1.75rem;background:rgba(6,9,18,.8);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50}
-.topbar-left{display:flex;align-items:center;gap:.75rem}
-.page-title{font-size:.95rem;font-weight:600;letter-spacing:-.01em}
-.page-sub{font-size:.75rem;color:var(--text3)}
-.topbar-right{display:flex;align-items:center;gap:.65rem}
-.chip{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .75rem;border-radius:999px;font-size:.72rem;font-weight:500;border:1px solid}
-.chip.live{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.25);color:var(--green)}
-.chip.gold{background:var(--gold-dim);border-color:rgba(240,180,41,.3);color:var(--gold)}
+/* ─── Main ────────────────────────────────────────────────────── */
+.main{margin-left:var(--sb);position:relative;z-index:1;min-height:100vh}
+.topbar{height:52px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:rgba(6,9,18,.9);backdrop-filter:blur(14px);position:sticky;top:0;z-index:100}
+.tb-l{display:flex;align-items:center;gap:.45rem}
+.pg-title{font-size:.87rem;font-weight:600}
+.bc{font-size:.71rem;color:var(--text3)}
+.tb-r{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:.26rem;padding:.24rem .65rem;border-radius:999px;font-size:.66rem;font-weight:500;border:1px solid}
+.chip.live{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.24);color:var(--green)}
+.chip.stable{background:var(--blue-dim);border-color:rgba(59,130,246,.26);color:var(--blue)}
+.chip.gold{background:var(--gold-dim);border-color:rgba(240,180,41,.26);color:var(--gold)}
+.chip.ml{background:var(--purple-dim);border-color:rgba(139,92,246,.26);color:var(--purple)}
 .dot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:blink 1.4s ease-in-out infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.28}}
 
-.content{padding:1.5rem 1.75rem;display:flex;flex-direction:column;gap:1.25rem}
+/* ─── Sections ────────────────────────────────────────────────── */
+.sec{display:none;padding:1.35rem 1.5rem;flex-direction:column;gap:1.05rem;animation:fu .27s ease}
+.sec.active{display:flex}
+@keyframes fu{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
 
-/* Countdown */
-.countdown-bar{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
-.countdown-label{font-size:.72rem;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem}
-.countdown-row{display:flex;align-items:center;gap:.75rem}
-.time-unit{text-align:center}
-.time-val{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:600;color:var(--gold);line-height:1}
-.time-label{font-size:.6rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:.15rem}
-.time-sep{font-size:1.4rem;color:var(--text3);margin-bottom:.6rem}
-.draw-info{text-align:right}
-.draw-info p:first-child{font-size:.72rem;color:var(--text3)}
-.draw-info p:last-child{font-size:.95rem;font-weight:600;color:var(--text)}
+/* ─── Grid ────────────────────────────────────────────────────── */
+.g2{display:grid;grid-template-columns:1fr 348px;gap:1.05rem;align-items:start}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.05rem;align-items:start}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:.78rem}
+.stack{display:flex;flex-direction:column;gap:1.05rem}
 
-/* Stats */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem}
-.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:1.1rem 1.25rem;position:relative;overflow:hidden;transition:border-color .2s}
-.stat:hover{border-color:var(--border2)}
+/* ─── Latest winner banner ────────────────────────────────────── */
+.winner-banner{background:linear-gradient(135deg,rgba(240,180,41,.1) 0%,rgba(240,180,41,.04) 100%);border:1px solid rgba(240,180,41,.3);border-radius:var(--r2);padding:1rem 1.4rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;position:relative;overflow:hidden}
+.winner-banner::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(240,180,41,.12),transparent 70%);pointer-events:none}
+.wb-left{display:flex;align-items:center;gap:1rem}
+.wb-trophy{font-size:2rem;filter:drop-shadow(0 0 8px rgba(240,180,41,.4))}
+.wb-info{}
+.wb-label{font-size:.63rem;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;font-weight:500}
+.wb-draw{font-size:.75rem;color:var(--text2);margin-top:.05rem}
+.wb-number{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;color:var(--gold);letter-spacing:.08em;line-height:1;text-shadow:0 0 20px rgba(240,180,41,.3)}
+.wb-series{display:inline-flex;align-items:center;padding:.18rem .55rem;background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.35);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;color:var(--purple);margin-left:.5rem}
+.wb-right{text-align:right}
+.wb-agent{font-size:.82rem;font-weight:600;color:var(--text)}
+.wb-place{font-size:.72rem;color:var(--text2);margin-top:.1rem}
+.wb-date{font-size:.65rem;color:var(--text3);margin-top:.2rem}
+.wb-live{display:inline-flex;align-items:center;gap:.3rem;font-size:.65rem;color:var(--green);background:var(--green-dim);border:1px solid rgba(16,185,129,.2);border-radius:999px;padding:.18rem .55rem;margin-top:.35rem}
+
+/* ─── Countdown ───────────────────────────────────────────────── */
+.cbar{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:.88rem 1.35rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.85rem}
+.cbar-lbl{font-size:.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.2rem}
+.cu{display:flex;align-items:center;gap:.55rem}
+.tu{text-align:center}
+.tv{font-family:'JetBrains Mono',monospace;font-size:1.65rem;font-weight:600;color:var(--gold);line-height:1}
+.tl{font-size:.55rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-top:.08rem}
+.ts{font-size:1.2rem;color:var(--text3);margin-bottom:.45rem}
+.ci p:first-child{font-size:.62rem;color:var(--text3)}
+.ci p:last-child{font-size:.85rem;font-weight:600;color:var(--text)}
+
+/* ─── Stat cards ──────────────────────────────────────────────── */
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:.92rem 1.05rem;position:relative;overflow:hidden}
 .stat::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.stat.gold::after{background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.stat.blue::after{background:linear-gradient(90deg,transparent,var(--blue),transparent)}
-.stat.green::after{background:linear-gradient(90deg,transparent,var(--green),transparent)}
-.stat.purple::after{background:linear-gradient(90deg,transparent,var(--purple),transparent)}
-.stat-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:.65rem}
-.stat-icon.gold{background:var(--gold-dim)}
-.stat-icon.blue{background:var(--blue-dim)}
-.stat-icon.green{background:var(--green-dim)}
-.stat-icon.purple{background:var(--purple-dim)}
-.stat-label{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem}
-.stat-val{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:600;line-height:1}
-.stat-sub{font-size:.7rem;color:var(--text3);margin-top:.2rem}
+.stat.g::after{background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.stat.b::after{background:linear-gradient(90deg,transparent,var(--blue),transparent)}
+.stat.gr::after{background:linear-gradient(90deg,transparent,var(--green),transparent)}
+.stat.p::after{background:linear-gradient(90deg,transparent,var(--purple),transparent)}
+.stat.c::after{background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+.stat-ico{width:27px;height:27px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.82rem;margin-bottom:.45rem}
+.stat-ico.g{background:var(--gold-dim)}.stat-ico.b{background:var(--blue-dim)}
+.stat-ico.gr{background:var(--green-dim)}.stat-ico.p{background:var(--purple-dim)}.stat-ico.c{background:var(--cyan-dim)}
+.stat-lbl{font-size:.62rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.12rem}
+.stat-val{font-family:'JetBrains Mono',monospace;font-size:1.38rem;font-weight:600;line-height:1}
+.stat-sub{font-size:.62rem;color:var(--text3);margin-top:.12rem}
 
-/* Two-col */
-.two-col{display:grid;grid-template-columns:1fr 360px;gap:1.25rem;align-items:start}
-.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem;align-items:start}
-
-/* Panel */
+/* ─── Panel ───────────────────────────────────────────────────── */
 .panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
-.panel-head{padding:.9rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.panel-head h2{font-size:.82rem;font-weight:600;letter-spacing:.01em}
-.panel-head .badge{font-size:.65rem;padding:.2rem .6rem;border-radius:999px;background:var(--card2);border:1px solid var(--border2);color:var(--text2)}
+.ph{padding:.76rem 1.1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ph h2{font-size:.78rem;font-weight:600}
+.badge{font-size:.6rem;padding:.15rem .5rem;border-radius:999px;background:var(--card2);border:1px solid var(--border2);color:var(--text2)}
+.badge.ml{background:var(--purple-dim);border-color:rgba(139,92,246,.25);color:var(--purple)}
+.badge.live{background:var(--green-dim);border-color:rgba(16,185,129,.25);color:var(--green)}
 
-/* Results table */
-.results-scroll{max-height:520px;overflow-y:auto}
-.results-scroll::-webkit-scrollbar{width:3px}
-.results-scroll::-webkit-scrollbar-thumb{background:var(--border2)}
-.result-row{display:flex;align-items:center;gap:1rem;padding:.8rem 1.25rem;border-bottom:1px solid var(--border);transition:background .12s;cursor:default}
-.result-row:last-child{border-bottom:none}
-.result-row:hover{background:rgba(255,255,255,.02)}
-.result-row:first-child .rnum{color:var(--gold)}
-.rdate{font-size:.7rem;color:var(--text3);min-width:80px}
-.rdraw{font-size:.7rem;color:var(--text2);min-width:48px}
-.rnum{font-family:'JetBrains Mono',monospace;font-size:1.05rem;font-weight:600;flex:1}
-.ragent{font-size:.72rem;color:var(--text2);text-align:right;line-height:1.3}
-.ragent span{display:block;color:var(--text3);font-size:.65rem}
-.rplace{font-size:.68rem;color:var(--text3);display:flex;align-items:center;gap:.3rem}
-.place-dot{width:6px;height:6px;border-radius:50%}
+/* ─── Results list ────────────────────────────────────────────── */
+.rscroll{max-height:505px;overflow-y:auto}
+.rscroll::-webkit-scrollbar{width:3px}
+.rscroll::-webkit-scrollbar-thumb{background:var(--border2)}
+.rrow{display:grid;grid-template-columns:66px 42px 1fr auto;align-items:center;gap:.62rem;padding:.6rem 1.1rem;border-bottom:1px solid var(--border);transition:background .1s}
+.rrow:last-child{border-bottom:none}
+.rrow:hover{background:rgba(255,255,255,.017)}
+.rrow.top .rnum{color:var(--gold)}
+.rdate{font-size:.62rem;color:var(--text3)}
+.rdraw{font-size:.62rem;color:var(--text2)}
+.rnrow{display:flex;align-items:center;gap:.38rem}
+.rnum{font-family:'JetBrains Mono',monospace;font-size:.94rem;font-weight:600}
+.rs-badge{font-size:.57rem;padding:.09rem .38rem;border-radius:5px;background:var(--purple-dim);border:1px solid rgba(139,92,246,.28);color:var(--purple);font-family:'JetBrains Mono',monospace;font-weight:600}
+.ragent{font-size:.65rem;color:var(--text2);text-align:right;line-height:1.3}
+.ragent span{display:block;font-size:.58rem;color:var(--text3)}
 
-/* Predictions */
-.pred-grid{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;padding:1rem 1.1rem}
-.pred-chip{background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:.65rem .75rem;text-align:center;transition:all .18s;cursor:default;position:relative;overflow:hidden}
-.pred-chip::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--blue-dim),transparent);opacity:0;transition:opacity .2s}
-.pred-chip:hover::before{opacity:1}
-.pred-chip:hover{border-color:rgba(59,130,246,.35);transform:translateY(-1px)}
-.pred-num{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:var(--blue);position:relative}
-.pred-conf{font-size:.6rem;color:var(--text3);margin-top:.15rem;position:relative}
+/* ─── ML Prediction grid ──────────────────────────────────────── */
+.pred-grid{display:grid;grid-template-columns:1fr 1fr;gap:.44rem;padding:.8rem .9rem}
+.pc{background:var(--card2);border:1px solid var(--border);border-radius:var(--r);padding:.56rem .65rem;transition:all .16s;position:relative;overflow:hidden}
+.pc::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,rgba(139,92,246,.06),transparent);opacity:0;transition:opacity .2s}
+.pc:hover::before{opacity:1}
+.pc:hover{border-color:rgba(139,92,246,.35);transform:translateY(-1px)}
+.pc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.12rem}
+.pc-num{font-family:'JetBrains Mono',monospace;font-size:.88rem;font-weight:600;color:var(--blue)}
+.pc-ser{font-size:.57rem;padding:.08rem .36rem;border-radius:5px;background:var(--purple-dim);border:1px solid rgba(139,92,246,.28);color:var(--purple);font-family:'JetBrains Mono',monospace;font-weight:600}
+.pc-score{font-size:.56rem;color:var(--text3);display:flex;align-items:center;gap:.28rem}
+.pc-ml-dot{width:5px;height:5px;border-radius:50%;background:var(--purple);opacity:.7}
+.pc-bar{height:3px;background:rgba(255,255,255,.05);border-radius:2px;margin-top:.26rem;overflow:hidden}
+.pc-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--purple),var(--blue))}
+.pred-foot{padding:.55rem .9rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.pred-foot p{font-size:.62rem;color:var(--text3)}
+.pred-foot strong{color:var(--green)}
+.stable-chip{display:inline-flex;align-items:center;gap:.26rem;font-size:.59rem;color:var(--blue);background:var(--blue-dim);border:1px solid rgba(59,130,246,.18);border-radius:999px;padding:.16rem .52rem}
 
-/* Digit freq */
-.digit-section{padding:.9rem 1.1rem}
-.dsub{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem}
-.dsub.hot{color:var(--gold)}
-.dsub.cold{color:var(--blue)}
-.digit-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem}
-.d-chip{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.85rem;font-weight:600;border:1px solid}
-.d-chip.hot{background:rgba(240,180,41,.1);border-color:rgba(240,180,41,.3);color:var(--gold)}
-.d-chip.cold{background:var(--blue-dim);border-color:rgba(59,130,246,.3);color:var(--blue)}
-.ending-row{display:flex;gap:.4rem;flex-wrap:wrap}
-.e-chip{padding:.25rem .6rem;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:500}
-.e-chip.hot{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);color:var(--purple)}
+/* ─── Pattern pills ───────────────────────────────────────────── */
+.dsec{padding:.76rem .96rem}
+.dsub{font-size:.61rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.36rem}
+.dsub.hot{color:var(--gold)}.dsub.cold{color:var(--blue)}.dsub.end{color:var(--purple)}.dsub.ser{color:var(--green)}.dsub.pos{color:var(--cyan)}
+.drow{display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.68rem}
+.dc{width:31px;height:31px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.77rem;font-weight:600;border:1px solid}
+.dc.hot{background:rgba(240,180,41,.1);border-color:rgba(240,180,41,.28);color:var(--gold)}
+.dc.cold{background:var(--blue-dim);border-color:rgba(59,130,246,.28);color:var(--blue)}
+.ec{padding:.17rem .46rem;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.69rem;font-weight:600;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.28);color:var(--purple)}
+.sc{padding:.17rem .46rem;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.69rem;font-weight:600;background:var(--green-dim);border:1px solid rgba(16,185,129,.28);color:var(--green)}
 
-/* Store table */
-.store-table{width:100%;border-collapse:collapse}
-.store-table th{font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:.65rem 1rem;border-bottom:1px solid var(--border);text-align:left;font-weight:500}
-.store-table td{padding:.65rem 1rem;border-bottom:1px solid var(--border);font-size:.8rem;color:var(--text2);vertical-align:middle}
-.store-table tr:last-child td{border-bottom:none}
-.store-table tr:hover td{background:rgba(255,255,255,.02)}
-.rank-badge{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700}
-.rank-1{background:rgba(240,180,41,.2);color:var(--gold);border:1px solid rgba(240,180,41,.4)}
-.rank-2{background:rgba(148,163,184,.12);color:#94a3b8;border:1px solid rgba(148,163,184,.3)}
-.rank-3{background:rgba(205,127,50,.12);color:#cd7f32;border:1px solid rgba(205,127,50,.3)}
-.rank-n{background:rgba(255,255,255,.05);color:var(--text3);border:1px solid var(--border)}
-.win-bar-wrap{width:90px;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
-.win-bar{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),var(--gold2))}
-.store-name{font-weight:500;color:var(--text);font-size:.82rem}
+/* ─── Position analysis ───────────────────────────────────────── */
+.pos-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:.4rem;padding:.76rem .96rem}
+.pos-col{text-align:center}
+.pos-label{font-size:.58rem;color:var(--cyan);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.3rem}
+.pos-digit{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;margin:0 auto .2rem;border:1px solid}
+.pos-digit.p0{background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.3);color:var(--cyan)}
+.pos-digit.p1{background:rgba(139,92,246,.1);border-color:rgba(139,92,246,.3);color:var(--purple)}
+.pos-digit.p2{background:rgba(240,180,41,.1);border-color:rgba(240,180,41,.3);color:var(--gold)}
+.pos-digit.p3{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.3);color:var(--green)}
+.pos-digit.p4{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3);color:var(--blue)}
+.pos-digit.p5{background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.3);color:var(--orange)}
 
-/* District chart */
-.dist-bars{padding:.75rem 1.1rem}
-.dist-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.55rem}
-.dist-label{font-size:.72rem;color:var(--text2);min-width:88px}
-.dist-bar-wrap{flex:1;height:8px;background:rgba(255,255,255,.05);border-radius:4px;overflow:hidden}
-.dist-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue),rgba(59,130,246,.4))}
-.dist-count{font-size:.68rem;color:var(--text3);min-width:22px;text-align:right}
+/* ─── Tables ──────────────────────────────────────────────────── */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:.61rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;padding:.5rem .95rem;border-bottom:1px solid var(--border);text-align:left;font-weight:500}
+.tbl td{padding:.5rem .95rem;border-bottom:1px solid var(--border);font-size:.75rem;vertical-align:middle;color:var(--text2)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover td{background:rgba(255,255,255,.015)}
+.rb{width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700}
+.r1{background:rgba(240,180,41,.2);color:var(--gold);border:1px solid rgba(240,180,41,.4)}
+.r2{background:rgba(148,163,184,.12);color:#94a3b8;border:1px solid rgba(148,163,184,.28)}
+.r3{background:rgba(205,127,50,.12);color:#cd7f32;border:1px solid rgba(205,127,50,.28)}
+.rn{background:rgba(255,255,255,.04);color:var(--text3);border:1px solid var(--border)}
+.wbar-w{width:75px;height:5px;background:rgba(255,255,255,.052);border-radius:3px;overflow:hidden}
+.wbar{height:100%;border-radius:3px}
+.wbar.gold{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.wbar.purple{background:linear-gradient(90deg,var(--purple),rgba(139,92,246,.35))}
+.sname{font-weight:500;color:var(--text);font-size:.77rem}
+.splace{font-size:.61rem;color:var(--text3)}
+.sbadge{display:inline-flex;align-items:center;gap:.24rem;padding:.12rem .46rem;border-radius:999px;font-size:.59rem;font-weight:500}
+.sbadge.active{background:var(--green-dim);border:1px solid rgba(16,185,129,.23);color:var(--green)}
+.sbadge.inactive{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text3)}
+.trend{display:inline-flex;align-items:center;gap:.17rem;font-size:.61rem;padding:.11rem .38rem;border-radius:999px;font-weight:500}
+.trend.up{background:var(--green-dim);color:var(--green)}
+.trend.dn{background:var(--red-dim);color:var(--red)}
+.trend.flat{background:rgba(255,255,255,.04);color:var(--text3)}
+.trend.inactive{background:rgba(255,255,255,.04);color:var(--text3)}
 
-/* Prediction timer */
-.pred-timer{padding:.75rem 1.1rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.pred-timer p{font-size:.7rem;color:var(--text3)}
-.pred-timer strong{color:var(--green);font-family:'JetBrains Mono',monospace}
+/* ─── Bars ────────────────────────────────────────────────────── */
+.bars{padding:.66rem .96rem}
+.barrow{display:flex;align-items:center;gap:.48rem;margin-bottom:.38rem}
+.barlabel{font-size:.66rem;color:var(--text2);min-width:88px}
+.barlabel.mono{font-family:'JetBrains Mono',monospace;font-weight:600;min-width:36px}
+.barwrap{flex:1;height:6px;background:rgba(255,255,255,.046);border-radius:3px;overflow:hidden}
+.barfill{height:100%;border-radius:3px;transition:width .4s ease}
+.barcount{font-size:.61rem;color:var(--text3);min-width:17px;text-align:right}
 
-/* Notice */
-.notice{background:rgba(240,180,41,.06);border:1px solid rgba(240,180,41,.15);border-radius:var(--r);padding:.75rem 1rem;display:flex;align-items:flex-start;gap:.65rem;font-size:.75rem;color:var(--text2);line-height:1.5}
-.notice-icon{font-size:1rem;flex-shrink:0;margin-top:.05rem}
+/* ─── Notice ──────────────────────────────────────────────────── */
+.notice{border-radius:var(--r);padding:.6rem .86rem;display:flex;align-items:flex-start;gap:.56rem;font-size:.7rem;color:var(--text2);line-height:1.55;border:1px solid}
+.notice.warn{background:rgba(240,180,41,.055);border-color:rgba(240,180,41,.14)}
+.notice.info{background:var(--blue-dim);border-color:rgba(59,130,246,.18)}
+.notice.succ{background:var(--green-dim);border-color:rgba(16,185,129,.18)}
+.notice.ml{background:var(--purple-dim);border-color:rgba(139,92,246,.2)}
 
-/* Animations */
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.panel,.stat,.countdown-bar{animation:fadeUp .4s ease both}
-.stats-grid .stat:nth-child(1){animation-delay:.05s}
-.stats-grid .stat:nth-child(2){animation-delay:.1s}
-.stats-grid .stat:nth-child(3){animation-delay:.15s}
-.stats-grid .stat:nth-child(4){animation-delay:.2s}
+/* ─── ML explain cards ────────────────────────────────────────── */
+.ml-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border)}
+.ml-step{padding:.88rem 1.05rem;border-right:1px solid var(--border)}
+.ml-step:last-child{border-right:none}
+.ml-ico{font-size:1.05rem;margin-bottom:.3rem}
+.ml-title{font-size:.75rem;font-weight:600;margin-bottom:.18rem}
+.ml-desc{font-size:.66rem;color:var(--text3);line-height:1.5}
+.ml-badge{display:inline-flex;font-size:.6rem;padding:.1rem .4rem;border-radius:4px;background:var(--purple-dim);color:var(--purple);border:1px solid rgba(139,92,246,.22);margin-bottom:.28rem}
 
-@media(max-width:1100px){.two-col,.three-col{grid-template-columns:1fr}.stats-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:768px){.sidebar{display:none}.main{margin-left:0}.stats-grid{grid-template-columns:1fr 1fr}}
+/* ─── Compare ─────────────────────────────────────────────────── */
+.cmp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.88rem}
+.cc{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.cc.hist{border-color:rgba(139,92,246,.2)}
+.cc-head{padding:.74rem 1.02rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cc-name{font-size:.77rem;font-weight:600}
+.cc-body{padding:.74rem 1.02rem}
+.cc-row{display:flex;justify-content:space-between;align-items:center;padding:.25rem 0;border-bottom:1px solid rgba(255,255,255,.036)}
+.cc-row:last-child{border-bottom:none}
+.cc-lbl{font-size:.64rem;color:var(--text3)}
+.cc-val{font-size:.71rem;font-weight:500;font-family:'JetBrains Mono',monospace}
+
+/* ─── Add result form ─────────────────────────────────────────── */
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.72rem;padding:.96rem 1.1rem}
+.field label{font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:.28rem}
+.field input{width:100%;background:var(--card2);border:1px solid var(--border2);border-radius:var(--r);padding:.43rem .7rem;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.77rem;outline:none;transition:border-color .13s}
+.field input:focus{border-color:rgba(59,130,246,.4)}
+.field input::placeholder{color:var(--text3)}
+.form-foot{padding:.72rem 1.1rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.submit-btn{background:var(--green);color:#fff;border:none;border-radius:var(--r);padding:.48rem 1.15rem;font-size:.78rem;font-weight:600;cursor:pointer;transition:background .13s}
+.submit-btn:hover{background:#059669}
+.form-msg{font-size:.73rem;color:var(--text3)}
+
+/* ─── Live check button ───────────────────────────────────────── */
+.live-check-btn{display:inline-flex;align-items:center;gap:.38rem;background:var(--cyan-dim);border:1px solid rgba(6,182,212,.25);border-radius:var(--r);padding:.42rem .88rem;font-size:.75rem;color:var(--cyan);cursor:pointer;transition:all .14s;font-weight:500}
+.live-check-btn:hover{background:rgba(6,182,212,.15);border-color:rgba(6,182,212,.4)}
+
+/* ─── AI Chat ─────────────────────────────────────────────────── */
+.chat-layout{display:grid;grid-template-columns:1fr 290px;gap:1.05rem;align-items:start}
+.chat-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;display:flex;flex-direction:column;height:625px}
+.chat-msgs{flex:1;overflow-y:auto;padding:.86rem 1.05rem;display:flex;flex-direction:column;gap:.7rem}
+.chat-msgs::-webkit-scrollbar{width:3px}
+.chat-msgs::-webkit-scrollbar-thumb{background:var(--border2)}
+.msg{display:flex;flex-direction:column;gap:.16rem;animation:fu .2s ease}
+.msg-lbl{font-size:.58rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text3)}
+.bubble{padding:.56rem .76rem;border-radius:12px;font-size:.78rem;line-height:1.62;max-width:93%}
+.msg.user{align-items:flex-end}
+.msg.user .msg-lbl{color:var(--blue);text-align:right}
+.msg.user .bubble{background:rgba(59,130,246,.11);border:1px solid rgba(59,130,246,.2);color:var(--text);border-radius:12px 12px 4px 12px}
+.msg.ai .bubble{background:var(--card2);border:1px solid var(--border);color:var(--text2);border-radius:12px 12px 12px 4px}
+.msg.ai .msg-lbl{color:var(--gold)}
+.msg.sys .bubble{background:var(--green-dim);border:1px solid rgba(16,185,129,.2);color:var(--text2);font-size:.73rem;text-align:center;align-self:center;border-radius:var(--r)}
+.typing-w{display:flex;gap:.28rem;align-items:center;padding:.5rem .76rem;background:var(--card2);border:1px solid var(--border);border-radius:12px 12px 12px 4px;width:fit-content}
+.typing-w span{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:bounce .85s ease-in-out infinite}
+.typing-w span:nth-child(2){animation-delay:.14s}
+.typing-w span:nth-child(3){animation-delay:.28s}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.chat-bottom{border-top:1px solid var(--border);padding:.7rem .9rem;display:flex;flex-direction:column;gap:.44rem}
+.quick-btns{display:flex;flex-wrap:wrap;gap:.3rem}
+.qbtn{padding:.22rem .54rem;background:var(--card2);border:1px solid var(--border2);border-radius:999px;font-size:.63rem;color:var(--text2);cursor:pointer;transition:all .12s}
+.qbtn:hover{border-color:rgba(59,130,246,.36);color:var(--blue)}
+.chat-row{display:flex;gap:.46rem;align-items:flex-end}
+.chat-in{flex:1;background:var(--card2);border:1px solid var(--border2);border-radius:var(--r);padding:.46rem .7rem;color:var(--text);font-family:'Inter',sans-serif;font-size:.77rem;resize:none;min-height:35px;max-height:92px;outline:none;transition:border-color .12s;line-height:1.5}
+.chat-in:focus{border-color:rgba(59,130,246,.38)}
+.chat-in::placeholder{color:var(--text3)}
+.send-btn{background:var(--blue);color:#fff;border:none;border-radius:var(--r);padding:.46rem .8rem;font-size:.75rem;font-weight:600;cursor:pointer;transition:background .12s;white-space:nowrap;flex-shrink:0}
+.send-btn:hover{background:#2563eb}
+.send-btn:disabled{background:var(--card2);color:var(--text3);cursor:not-allowed}
+.key-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:.96rem 1.05rem}
+.key-panel h3{font-size:.78rem;font-weight:600;margin-bottom:.36rem}
+.key-panel p{font-size:.7rem;color:var(--text2);line-height:1.6;margin-bottom:.5rem}
+.free-badge{display:inline-flex;align-items:center;gap:.25rem;background:var(--green-dim);border:1px solid rgba(16,185,129,.23);border-radius:999px;padding:.15rem .5rem;font-size:.6rem;color:var(--green);margin-bottom:.4rem}
+.step-list{list-style:none;margin:.36rem 0 .62rem}
+.step-list li{font-size:.68rem;color:var(--text2);padding:.2rem 0;display:flex;gap:.4rem;align-items:flex-start;line-height:1.5}
+.step-list li::before{content:attr(data-n);background:var(--blue-dim);border:1px solid rgba(59,130,246,.23);border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:.57rem;font-weight:700;color:var(--blue);flex-shrink:0;margin-top:.1rem}
+.step-list li a{color:var(--blue);text-decoration:none}
+.key-in{width:100%;background:var(--card2);border:1px solid var(--border2);border-radius:var(--r);padding:.42rem .7rem;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.74rem;outline:none;margin-bottom:.46rem;transition:border-color .12s}
+.key-in:focus{border-color:rgba(59,130,246,.38)}
+.key-in::placeholder{color:var(--text3)}
+.save-btn{width:100%;background:var(--green);color:#fff;border:none;border-radius:var(--r);padding:.44rem;font-size:.76rem;font-weight:600;cursor:pointer;transition:background .12s}
+.save-btn:hover{background:#059669}
+.sug-panel{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:.96rem 1.05rem}
+.sug-panel h3{font-size:.76rem;font-weight:600;margin-bottom:.5rem;color:var(--text2)}
+.sug-item{padding:.4rem .6rem;background:var(--card2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:.34rem;font-size:.7rem;color:var(--text2);cursor:pointer;transition:all .12s;line-height:1.38}
+.sug-item:hover{border-color:rgba(59,130,246,.35);color:var(--text)}
+.sug-item:last-child{margin-bottom:0}
+
+/* ─── Responsive ──────────────────────────────────────────────── */
+@media(max-width:1100px){.g2,.g3,.cmp-grid,.chat-layout,.ml-grid,.form-grid{grid-template-columns:1fr}.g4{grid-template-columns:repeat(2,1fr)}.pos-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:768px){.sb{display:none}.main{margin-left:0}.g4{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 
-<div class="ambient"></div>
-
-<!-- Sidebar -->
-<aside class="sidebar">
-  <div class="logo">
-    <h1>KL<span>I</span>ntel</h1>
-    <p>Kerala Lottery Analytics</p>
+<!-- ═══ SIDEBAR ═══════════════════════════════════════════════════════ -->
+<aside class="sb">
+  <div class="sb-logo">
+    <div class="sb-logo-row">
+      <div class="sb-icon">🎰</div>
+      <div>
+        <h1>KL<span>Intel</span><span class="sb-ver">v3</span></h1>
+        <div class="sb-sub">Lottery Intelligence</div>
+      </div>
+    </div>
   </div>
-  <nav class="nav">
-    <div class="nav-item active">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-      Dashboard
-    </div>
-    <div class="nav-item">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      Results
-    </div>
-    <div class="nav-item">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      Predictions
-    </div>
-    <div class="nav-item">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      Top Stores
-    </div>
-    <div class="nav-item">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      Analysis
-    </div>
+  <nav class="sb-nav">
+    <div class="nav-sec">Overview</div>
+    <div class="ni active" data-sec="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</div>
+    <div class="ni" data-sec="results"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>All Results</div>
+    <div class="nav-sec">ML Intelligence</div>
+    <div class="ni" data-sec="predictions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>ML Predictions</div>
+    <div class="ni" data-sec="analysis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Pattern Analysis</div>
+    <div class="nav-sec">Stores</div>
+    <div class="ni" data-sec="stores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Top Stores</div>
+    <div class="ni" data-sec="compare"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Compare Stores</div>
+    <div class="nav-sec">Tools</div>
+    <div class="ni" data-sec="addresult"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Add New Result</div>
+    <div class="ni" data-sec="ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>AI Assistant</div>
   </nav>
-  <div class="sidebar-footer">
-    <div class="draw-badge">
-      <p>Next Draw</p>
-      <p>{{ next_draw }} • 3:00 PM</p>
-    </div>
+  <div class="sb-foot">
+    <div class="auto-badge"><div class="auto-dot"></div>ML engine · {{ total }} draws · {{ years[0] }}–{{ years[-1] }}</div>
+    <div class="draw-chip"><p>Next Bhagyathara</p><p>{{ next_draw }} · 3 PM</p></div>
+    <div class="sb-note">AI: <a href="https://console.groq.com" target="_blank">Groq Llama 3.3</a> — free forever</div>
   </div>
 </aside>
 
-<!-- Main -->
+<!-- ═══ MAIN ═══════════════════════════════════════════════════════════ -->
 <main class="main">
   <div class="topbar">
-    <div class="topbar-left">
-      <span class="page-title">Dashboard</span>
-      <span class="page-sub">/ Overview</span>
+    <div class="tb-l">
+      <span class="pg-title" id="pg-title">Dashboard</span>
+      <span class="bc" id="pg-sub">/ Overview</span>
     </div>
-    <div class="topbar-right">
+    <div class="tb-r">
       <span class="chip live"><span class="dot"></span>Live Data</span>
-      <span class="chip gold">Bhagyathara · Weekly Monday</span>
+      <span class="chip ml">🧠 ML Ensemble Model</span>
+      <span class="chip stable">🔒 Locked · {{ next_draw }}</span>
+      <span class="chip gold">BT-55 · Mon 26 May</span>
     </div>
   </div>
 
-  <div class="content">
+  <!-- ══ DASHBOARD ══════════════════════════════════════════════════════ -->
+  <div class="sec active" id="sec-dashboard">
 
-    <!-- Countdown -->
-    <div class="countdown-bar">
-      <div>
-        <div class="countdown-label">Next draw countdown</div>
-        <div class="countdown-row">
-          <div class="time-unit"><div class="time-val" id="cd-days">{{ days_left }}</div><div class="time-label">Days</div></div>
-          <div class="time-sep">:</div>
-          <div class="time-unit"><div class="time-val" id="cd-hrs">{{ hours_left }}</div><div class="time-label">Hours</div></div>
-          <div class="time-sep">:</div>
-          <div class="time-unit"><div class="time-val" id="cd-mins">{{ mins_left }}</div><div class="time-label">Mins</div></div>
-          <div class="time-sep">:</div>
-          <div class="time-unit"><div class="time-val" id="cd-secs">00</div><div class="time-label">Secs</div></div>
+    <!-- Latest Winner Banner -->
+    {% if latest %}
+    <div class="winner-banner">
+      <div class="wb-left">
+        <div class="wb-trophy">🏆</div>
+        <div class="wb-info">
+          <div class="wb-label">Latest 1st Prize Winner — {{ latest.draw }}</div>
+          <div class="wb-draw">{{ latest.date }} · Bhagyathara · Official Result</div>
+          <div style="margin-top:.3rem;display:flex;align-items:center;flex-wrap:wrap;gap:.3rem">
+            <span class="wb-number">{{ latest.first_prize }}</span>
+            <span class="wb-series">{{ latest.series }}</span>
+          </div>
         </div>
       </div>
-      <div class="draw-info">
-        <p>Draw date</p>
-        <p>{{ next_draw }}</p>
+      <div class="wb-right">
+        <div class="wb-agent">{{ latest.agent }}</div>
+        <div class="wb-place">{{ latest.agency_no }} · {{ latest.place }}, {{ latest.district }}</div>
+        <div class="wb-date">2nd Prize: {{ latest.second_prize }} — {{ latest.second_agent }}</div>
+        <div class="wb-live"><span class="dot"></span>Official · BT-54 · 18 May 2026</div>
       </div>
-      <div class="draw-info">
-        <p>Draw time</p>
-        <p>3:00 PM IST</p>
+    </div>
+    {% endif %}
+
+    <!-- Countdown -->
+    <div class="cbar">
+      <div>
+        <div class="cbar-lbl">BT-55 draw countdown — Mon 26 May 2026 · 3:00 PM IST</div>
+        <div class="cu">
+          <div class="tu"><div class="tv" id="cd-d">--</div><div class="tl">Days</div></div>
+          <div class="ts">:</div>
+          <div class="tu"><div class="tv" id="cd-h">--</div><div class="tl">Hrs</div></div>
+          <div class="ts">:</div>
+          <div class="tu"><div class="tv" id="cd-m">--</div><div class="tl">Min</div></div>
+          <div class="ts">:</div>
+          <div class="tu"><div class="tv" id="cd-s">--</div><div class="tl">Sec</div></div>
+        </div>
       </div>
-      <div class="draw-info">
-        <p>1st Prize</p>
-        <p style="color:var(--gold)">₹1,00,00,000</p>
-      </div>
+      <div class="ci"><p>Next Draw</p><p>{{ next_draw }}</p></div>
+      <div class="ci"><p>Draw time</p><p>3:00 PM IST</p></div>
+      <div class="ci"><p>1st Prize</p><p style="color:var(--gold)">₹1 Crore</p></div>
+      <div class="ci"><p>Ticket Price</p><p>₹50</p></div>
     </div>
 
     <!-- Stats -->
-    <div class="stats-grid">
-      <div class="stat gold">
-        <div class="stat-icon gold">🏆</div>
-        <div class="stat-label">Total Draws Analysed</div>
-        <div class="stat-val" style="color:var(--gold)">{{ total }}</div>
-        <div class="stat-sub">Real official results</div>
-      </div>
-      <div class="stat blue">
-        <div class="stat-icon blue">🎯</div>
-        <div class="stat-label">Prediction Accuracy</div>
-        <div class="stat-val" style="color:var(--blue)">68%</div>
-        <div class="stat-sub">Pattern-based estimate</div>
-      </div>
-      <div class="stat green">
-        <div class="stat-icon green">🏪</div>
-        <div class="stat-label">Lucky Stores Tracked</div>
-        <div class="stat-val" style="color:var(--green)">{{ top_stores|length }}</div>
-        <div class="stat-sub">5-year high winners</div>
-      </div>
-      <div class="stat purple">
-        <div class="stat-icon purple">📊</div>
-        <div class="stat-label">Districts Covered</div>
-        <div class="stat-val" style="color:var(--purple)">14</div>
-        <div class="stat-sub">Across Kerala</div>
-      </div>
+    <div class="g4">
+      <div class="stat g"><div class="stat-ico g">📊</div><div class="stat-lbl">Draws Analysed</div><div class="stat-val" style="color:var(--gold)">{{ total }}</div><div class="stat-sub">{{ years[0] }}–{{ years[-1] }} auto-loaded</div></div>
+      <div class="stat p"><div class="stat-ico p">🧠</div><div class="stat-lbl">ML Model</div><div class="stat-val" style="color:var(--purple);font-size:.9rem;margin-top:.18rem">ENSEMBLE</div><div class="stat-sub">5-component scoring</div></div>
+      <div class="stat gr"><div class="stat-ico gr">🏪</div><div class="stat-lbl">Stores Ranked</div><div class="stat-val" style="color:var(--green)">{{ top_stores|length }}</div><div class="stat-sub">Auto from Excel data</div></div>
+      <div class="stat c"><div class="stat-ico c">🔡</div><div class="stat-lbl">Top Predicted Series</div><div class="stat-val" style="color:var(--cyan);font-size:.95rem;margin-top:.12rem">{{ hot_series[:3]|join(' ') }}</div><div class="stat-sub">From {{ total }} real draws</div></div>
     </div>
 
-    <!-- Notice -->
-    <div class="notice">
-      <span class="notice-icon">⚠️</span>
-      <span><strong style="color:var(--gold)">Important:</strong> Kerala lottery numbers are drawn randomly by the government. Pattern analysis and AI predictions are for entertainment and statistical study only — no system can guarantee winning. Always buy tickets from government-authorized agents. Results updated from official sources at keralalotteryresult.net.</span>
-    </div>
-
-    <!-- Row 1: Results + Predictions -->
-    <div class="two-col">
-
-      <!-- Latest Results -->
+    <!-- Main 2-col -->
+    <div class="g2">
+      <!-- Results -->
       <div class="panel">
-        <div class="panel-head">
-          <h2>Official Results — Bhagyathara</h2>
-          <span class="badge">Recent {{ results|length }}</span>
-        </div>
-        <div class="results-scroll">
+        <div class="ph"><h2>Official Results — Bhagyathara</h2><span class="badge live">Live · Corrected Data</span></div>
+        <div class="rscroll">
           {% for r in results %}
-          <div class="result-row">
+          <div class="rrow {% if loop.first %}top{% endif %}">
             <div class="rdate">{{ r.date }}</div>
             <div class="rdraw">{{ r.draw }}</div>
-            <div class="rnum">{{ r.first_prize }}</div>
-            <div class="ragent">
-              {{ r.agent }}
-              <span>{{ r.agency_no }} · {{ r.place }}</span>
+            <div class="rnrow">
+              <span class="rnum">{{ r.first_prize }}</span>
+              <span class="rs-badge">{{ r.series }}</span>
             </div>
+            <div class="ragent">{{ r.agent }}<span>{{ r.agency_no }} · {{ r.place }}</span></div>
           </div>
           {% endfor %}
         </div>
       </div>
 
-      <!-- Right: Predictions + Digits -->
-      <div style="display:flex;flex-direction:column;gap:1.25rem">
-
-        <!-- Predictions -->
+      <!-- Right stack -->
+      <div class="stack">
+        <!-- ML Predictions -->
         <div class="panel">
-          <div class="panel-head">
-            <h2>🎯 AI Probability Predictions</h2>
-            <span class="badge">Tomorrow</span>
-          </div>
+          <div class="ph"><h2>🧠 ML Predicted Numbers</h2><span class="badge ml">BT-55 · {{ next_draw }}</span></div>
           <div class="pred-grid">
             {% for p in predictions %}
-            <div class="pred-chip">
-              <div class="pred-num">{{ p }}</div>
-              <div class="pred-conf">Pattern score: {{ [62,67,71,58,74,69,63,77,65,72,60,68][loop.index0] }}%</div>
+            <div class="pc">
+              <div class="pc-top"><span class="pc-num">{{ p.number }}</span><span class="pc-ser">{{ p.series }}</span></div>
+              <div class="pc-score"><span class="pc-ml-dot"></span>ML score: {{ p.score }}%</div>
+              <div class="pc-bar"><div class="pc-fill" style="width:{{ p.score }}%"></div></div>
             </div>
             {% endfor %}
           </div>
-          <div class="pred-timer">
-            <p>Updated for draw on <strong>{{ next_draw }}</strong></p>
-            <p style="color:var(--text3);font-size:.68rem">Refreshes 24h before draw</p>
-          </div>
+          <div class="pred-foot"><p>BT-55 · <strong>{{ next_draw }}</strong></p><span class="stable-chip">🔒 Stable</span></div>
         </div>
-
-        <!-- Digit analysis -->
+        <!-- Quick pattern -->
         <div class="panel">
-          <div class="panel-head">
-            <h2>Digit Frequency</h2>
-            <span class="badge">Pattern Analysis</span>
-          </div>
-          <div class="digit-section">
-            <div class="dsub hot">🔥 Hot Digits (appear most)</div>
-            <div class="digit-row">
-              {% for d in hot_digits %}<div class="d-chip hot">{{ d }}</div>{% endfor %}
-            </div>
-            <div class="dsub cold">❄️ Cold Digits (appear least)</div>
-            <div class="digit-row">
-              {% for d in cold_digits %}<div class="d-chip cold">{{ d }}</div>{% endfor %}
-            </div>
-            <div class="dsub" style="color:var(--purple);margin-top:.2rem">🔮 Hot Ending Pairs</div>
-            <div class="ending-row">
-              {% for e in hot_endings %}<div class="e-chip hot">**{{ e }}</div>{% endfor %}
-            </div>
+          <div class="ph"><h2>Pattern Summary</h2><span class="badge">Live · {{ total }} draws</span></div>
+          <div class="dsec">
+            <div class="dsub hot">🔥 Hot Digits</div>
+            <div class="drow">{% for d in hot_digits %}<div class="dc hot">{{ d }}</div>{% endfor %}</div>
+            <div class="dsub ser">🔡 Top Series Letters</div>
+            <div class="drow">{% for s in hot_series %}<div class="sc">{{ s }}</div>{% endfor %}</div>
+            <div class="dsub end">🔮 Hot Ending Pairs</div>
+            <div class="drow">{% for e in hot_endings %}<div class="ec">**{{ e }}</div>{% endfor %}</div>
           </div>
         </div>
-
       </div>
     </div>
 
-    <!-- Row 2: Stores + Districts -->
-    <div class="two-col">
+    <!-- Info notices -->
+    <div class="notice ml"><span style="flex-shrink:0">🧠</span><span><strong style="color:var(--purple)">ML Ensemble Model Active:</strong> Predictions use 5 components — digit frequency (recency-weighted 3×), position-specific analysis (each of 6 positions), Markov chain transitions, ending pair bias, and series rotation. All re-computed live from {{ total }} draws every page load. Predictions are date-seeded (stable per week).</span></div>
+    <div class="notice warn"><span style="flex-shrink:0">⚠️</span><span><strong style="color:var(--gold)">Important:</strong> Kerala lottery is drawn by government physical ball machines — genuinely random. No ML system can guarantee winning. These are statistical patterns for research. Always buy from licensed agents. Last data: <strong style="color:var(--green)">BT-54 · 18 May 2026 · BW 788952</strong></span></div>
+  </div>
 
-      <!-- Top Stores 5yr -->
-      <div class="panel">
-        <div class="panel-head">
-          <h2>🏆 Top Lucky Stores — 5 Year Record</h2>
-          <span class="badge">High Win Agents</span>
-        </div>
-        <table class="store-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Agent / Store</th>
-              <th>Agency</th>
-              <th>District</th>
-              <th>1st Prize Wins</th>
-              <th>Total</th>
-            </tr>
+  <!-- ══ ALL RESULTS ══════════════════════════════════════════════════ -->
+  <div class="sec" id="sec-results">
+    <div class="notice info"><span style="flex-shrink:0">📡</span><span><strong style="color:var(--blue)">Live corrected data:</strong> Results are sourced from official keralalotteryresult.net, goodreturns.in, and onmanorama.com. BT-54 (18 May 2026) is the latest Bhagyathara draw. <strong>23 May 2026 was the Vishu Bumper BR-109</strong> — not a Bhagyathara draw. Next Bhagyathara is BT-55 on Monday 26 May 2026 at 3 PM.</span></div>
+    <div class="panel">
+      <div class="ph"><h2>All Official Results — {{ total }} Draws ({{ years[0] }}–{{ years[-1] }})</h2><span class="badge">Auto-loaded · Corrected · lottery_results.xlsx</span></div>
+      <div style="overflow-x:auto;max-height:600px;overflow-y:auto">
+        <table class="tbl">
+          <thead style="position:sticky;top:0;background:var(--card)">
+            <tr><th>#</th><th>Date</th><th>Draw</th><th>1st Prize</th><th>Series</th><th>Agent</th><th>Agency</th><th>Place</th><th>District</th><th>2nd Prize</th><th>2nd Agent</th><th>2nd Place</th></tr>
           </thead>
           <tbody>
-            {% for s in top_stores %}
+            {% for r in all_results %}
             <tr>
-              <td>
-                <div class="rank-badge {% if loop.index == 1 %}rank-1{% elif loop.index == 2 %}rank-2{% elif loop.index == 3 %}rank-3{% else %}rank-n{% endif %}">{{ loop.index }}</div>
-              </td>
-              <td>
-                <div class="store-name">{{ s.name }}</div>
-                <div style="font-size:.68rem;color:var(--text3)">{{ s.place }}</div>
-              </td>
-              <td style="font-family:'JetBrains Mono',monospace;font-size:.78rem">{{ s.agency }}</td>
-              <td>{{ s.district }}</td>
-              <td>
-                <div style="display:flex;align-items:center;gap:.5rem">
-                  <div class="win-bar-wrap"><div class="win-bar" style="width:{{ (s.wins / 14 * 100)|int }}%"></div></div>
-                  <span style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--gold)">{{ s.wins }}</span>
-                </div>
-              </td>
-              <td style="color:var(--green);font-size:.8rem;font-weight:600">₹{{ s.prize_total }}</td>
+              <td style="color:var(--text3)">{{ loop.index }}</td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:.71rem">{{ r.date }}</td>
+              <td><span class="sbadge active">{{ r.draw }}</span></td>
+              <td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--gold)">{{ r.first_prize }}</td>
+              <td><span class="rs-badge">{{ r.series }}</span></td>
+              <td><span class="sname">{{ r.agent }}</span></td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:.69rem">{{ r.agency_no }}</td>
+              <td>{{ r.place }}</td>
+              <td>{{ r.district }}</td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:.76rem">{{ r.second_prize }}</td>
+              <td style="font-size:.71rem">{{ r.second_agent }}</td>
+              <td style="font-size:.71rem">{{ r.second_place }}</td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
+    </div>
+  </div>
 
-      <!-- District Win Frequency -->
+  <!-- ══ ML PREDICTIONS ══════════════════════════════════════════════ -->
+  <div class="sec" id="sec-predictions">
+    <div class="notice ml"><span style="flex-shrink:0">🧠</span><span><strong style="color:var(--purple)">ML Ensemble Engine:</strong> Re-trained on ALL {{ total }} draws every page load. Predictions are stable per draw week (date-seeded MD5). Auto-update the following Monday. Series letters predicted by rotation frequency analysis.</span></div>
+    <div class="g2">
       <div class="panel">
-        <div class="panel-head">
-          <h2>District Win Distribution</h2>
-          <span class="badge">Where winners came from</span>
+        <div class="ph"><h2>🧠 ML Predictions — BT-55 · {{ next_draw }}</h2><span class="badge ml">Ensemble · {{ total }} draws</span></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.46rem;padding:.86rem .96rem">
+          {% for p in predictions %}
+          <div class="pc" style="padding:.66rem">
+            <div class="pc-top"><span class="pc-num" style="font-size:.95rem">{{ p.number }}</span><span class="pc-ser">{{ p.series }}</span></div>
+            <div class="pc-score" style="font-size:.59rem;margin-top:.16rem"><span class="pc-ml-dot"></span>ML: {{ p.score }}%</div>
+            <div class="pc-bar" style="margin-top:.3rem"><div class="pc-fill" style="width:{{ p.score }}%"></div></div>
+          </div>
+          {% endfor %}
         </div>
-        <div class="dist-bars" id="dist-bars">
-          <!-- filled by JS -->
+        <div class="pred-foot"><p>Locked for BT-55 · <strong>{{ next_draw }}</strong></p></div>
+      </div>
+      <!-- ML Model explanation -->
+      <div class="panel">
+        <div class="ph"><h2>🧠 How the ML Model Works</h2><span class="badge ml">5-Component Ensemble</span></div>
+        <div class="ml-grid" style="grid-template-columns:1fr">
+          {% for ico,name,comp,desc in [
+            ('📊','Digit Frequency','Component 1','Digits 0-9 scored by historical frequency, weighted 3× for recent draws'),
+            ('📍','Position Analysis','Component 2','Each of 6 number positions analysed independently — e.g. position 1 may favour 3,5,7 while position 4 favours 2,8'),
+            ('🔗','Markov Chain','Component 3','Digit-to-digit transition probabilities — which digit tends to follow another based on all historical numbers'),
+            ('🔚','Ending Pair Bias','Component 4','Last 2 digits get 3× weight — historical ending pairs repeat more often than chance'),
+            ('🔡','Series Rotation','Component 5','Series letters (BN, BW, BP…) ranked by frequency; predicted letter rotates based on historical draw sequence')
+          ] %}
+          <div class="ml-step" style="border-right:none;border-bottom:1px solid var(--border){% if loop.last %};border-bottom:none{% endif %}">
+            <div class="ml-ico">{{ ico }}</div>
+            <div class="ml-badge">{{ comp }}</div>
+            <div class="ml-title">{{ name }}</div>
+            <div class="ml-desc">{{ desc }}</div>
+          </div>
+          {% endfor %}
         </div>
       </div>
-
     </div>
 
-    <!-- How predictions work -->
+    <!-- Position-specific analysis -->
     <div class="panel">
-      <div class="panel-head">
-        <h2>How Predictions Work</h2>
-        <span class="badge">Methodology</span>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--border)">
-        {% set steps = [
-          ('📥', 'Data Collection', '3+ years of official Kerala lottery results are imported and stored'),
-          ('🔬', 'Pattern Analysis', 'Digit frequency, ending pairs, series patterns analysed across all draws'),
-          ('🤖', 'AI Scoring', 'Numbers ranked by probability score based on historical frequency weights'),
-          ('📊', 'Output', 'Top 12 candidate numbers generated fresh before each Monday draw')
-        ] %}
-        {% for icon, title, desc in steps %}
-        <div style="padding:1.1rem 1.25rem;border-right:1px solid var(--border);{% if loop.last %}border-right:none{% endif %}">
-          <div style="font-size:1.3rem;margin-bottom:.5rem">{{ icon }}</div>
-          <div style="font-size:.8rem;font-weight:600;margin-bottom:.3rem">{{ title }}</div>
-          <div style="font-size:.73rem;color:var(--text3);line-height:1.5">{{ desc }}</div>
+      <div class="ph"><h2>📍 Position-Specific Hot Digits (ML Component 2)</h2><span class="badge ml">Each position analysed independently</span></div>
+      <div class="pos-grid">
+        {% for pos in range(6) %}
+        <div class="pos-col">
+          <div class="pos-label">Pos {{ pos + 1 }}</div>
+          {% for d in pos_hot[pos|string] %}
+          <div class="pos-digit p{{ pos }}">{{ d }}</div>
+          {% endfor %}
         </div>
         {% endfor %}
       </div>
     </div>
+  </div>
 
-  </div><!-- /content -->
+  <!-- ══ PATTERN ANALYSIS ════════════════════════════════════════════ -->
+  <div class="sec" id="sec-analysis">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:.52rem 1rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;font-size:.64rem;color:var(--text3)">
+      <span>⚙️ Auto-analysed from <strong style="color:var(--green)">{{ total }} draws</strong></span>
+      <span>·</span><span>📅 <strong style="color:var(--text2)">{{ years[0] }}–{{ years[-1] }}</strong></span>
+      <span>·</span><span>⏱ <strong style="color:var(--text2)">{{ analysis_time }}</strong></span>
+      <span>·</span><span style="color:var(--cyan)">✓ Re-runs every page load</span>
+    </div>
+    <div class="g3">
+      <div class="panel">
+        <div class="ph"><h2>Digit & Pattern Frequency</h2><span class="badge">Weighted recency</span></div>
+        <div class="dsec">
+          <div class="dsub hot">🔥 Hot Digits</div>
+          <div class="drow">{% for d in hot_digits %}<div class="dc hot">{{ d }}</div>{% endfor %}</div>
+          <div class="dsub cold">❄️ Cold Digits</div>
+          <div class="drow">{% for d in cold_digits %}<div class="dc cold">{{ d }}</div>{% endfor %}</div>
+          <div class="dsub end">🔮 Hot Ending Pairs</div>
+          <div class="drow">{% for e in hot_endings %}<div class="ec">**{{ e }}</div>{% endfor %}</div>
+          <div class="dsub ser" style="margin-top:.12rem">🔡 Top Series Letters</div>
+          <div class="drow">{% for s in hot_series %}<div class="sc">{{ s }}</div>{% endfor %}</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><h2>District Win Frequency</h2><span class="badge">{{ total }} draws</span></div>
+        <div class="bars" id="bar-dist"></div>
+      </div>
+      <div class="panel">
+        <div class="ph"><h2>Series Letter Frequency</h2><span class="badge">1st Prize Series</span></div>
+        <div class="bars" id="bar-ser"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ph"><h2>📍 Position-Specific Analysis (ML Component 2)</h2><span class="badge ml">Top 3 digits per position from {{ total }} draws</span></div>
+      <div class="pos-grid" style="padding:1rem">
+        {% for pos in range(6) %}
+        <div class="pos-col">
+          <div class="pos-label">Position {{ pos + 1 }}</div>
+          {% for d in pos_hot[pos|string] %}
+          <div class="pos-digit p{{ pos }}">{{ d }}</div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STORES ══════════════════════════════════════════════════════ -->
+  <div class="sec" id="sec-stores">
+    <div class="notice succ"><span style="flex-shrink:0">⚙️</span><span><strong style="color:var(--green)">Auto-ranked from Excel:</strong> Store rankings computed live from all {{ total }} rows — 1st prize = full credit, 2nd prize = 0.5 credit. Updates automatically when new draws are added.</span></div>
+    <div class="panel">
+      <div class="ph"><h2>🟢 Current Active Agents — Auto-Ranked</h2><span class="badge">{{ years[0] }}–{{ years[-1] }} · {{ total }} draws</span></div>
+      <div style="overflow-x:auto">
+        <table class="tbl">
+          <thead><tr><th>#</th><th>Agent / Store</th><th>Agency</th><th>District</th><th>Wins</th><th>Bar</th><th>Prize Est.</th><th>Trend</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for s in top_stores %}
+            <tr>
+              <td><div class="rb {% if loop.index==1 %}r1{% elif loop.index==2 %}r2{% elif loop.index==3 %}r3{% else %}rn{% endif %}">{{ loop.index }}</div></td>
+              <td><div class="sname">{{ s.name }}</div><div class="splace">{{ s.place }}</div></td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:.69rem">{{ s.agency }}</td>
+              <td>{{ s.district }}</td>
+              <td style="font-family:'JetBrains Mono',monospace;color:var(--gold);font-weight:700">{{ s.wins }}</td>
+              <td><div class="wbar-w"><div class="wbar gold" style="width:{{ [100,(s.wins / (s.max_wins or 1) * 100)|int]|min }}%"></div></div></td>
+              <td style="color:var(--green);font-weight:600">₹{{ s.prize_total }}</td>
+              <td><span class="trend {{ s.trend }}">{% if s.trend=='up' %}↑ Rising{% elif s.trend=='dn' %}↓ Declining{% else %}→ Stable{% endif %}</span></td>
+              <td><span class="sbadge active">Active</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ph"><h2>🟡 Historic High-Win Stores — Inactive</h2><span class="badge">Before 2022</span></div>
+      <div style="overflow-x:auto">
+        <table class="tbl">
+          <thead><tr><th>#</th><th>Agent</th><th>Agency</th><th>District</th><th>Historic Wins</th><th>Bar</th><th>Prize Total</th><th>Note</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for s in historic_stores %}
+            <tr>
+              <td><div class="rb rn">H{{ loop.index }}</div></td>
+              <td><div class="sname">{{ s.name }}</div><div class="splace">{{ s.place }}</div></td>
+              <td style="font-family:'JetBrains Mono',monospace;font-size:.69rem">{{ s.agency }}</td>
+              <td>{{ s.district }}</td>
+              <td style="font-family:'JetBrains Mono',monospace;color:var(--purple);font-weight:700">{{ s.wins }}</td>
+              <td><div class="wbar-w"><div class="wbar purple" style="width:{{ (s.wins/18*100)|int }}%"></div></div></td>
+              <td style="color:var(--text2);font-weight:600">₹{{ s.prize_total }}</td>
+              <td style="font-size:.7rem;color:var(--text3)">{{ s.recommend }}</td>
+              <td><span class="sbadge inactive">Inactive</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ COMPARE ══════════════════════════════════════════════════════ -->
+  <div class="sec" id="sec-compare">
+    <div class="notice succ"><span style="flex-shrink:0">📊</span><span>Compare <strong style="color:var(--green)">current active</strong> vs <strong style="color:var(--gold)">historic</strong> stores. Rising-trend current stores = best choice for buying tickets.</span></div>
+    <div style="font-size:.74rem;font-weight:600;color:var(--green);margin-bottom:.5rem">🟢 Current Active Stores</div>
+    <div class="cmp-grid">
+      {% for s in top_stores[:3] %}
+      <div class="cc">
+        <div class="cc-head"><span class="cc-name">{{ s.name }}</span><span class="sbadge active">Active</span></div>
+        <div class="cc-body">
+          <div class="cc-row"><span class="cc-lbl">Agency</span><span class="cc-val">{{ s.agency }}</span></div>
+          <div class="cc-row"><span class="cc-lbl">Location</span><span class="cc-val" style="font-family:'Inter',sans-serif;font-size:.71rem">{{ s.place }}, {{ s.district }}</span></div>
+          <div class="cc-row"><span class="cc-lbl">Wins ({{ years[0] }}–{{ years[-1] }})</span><span class="cc-val" style="color:var(--gold)">{{ s.wins }}</span></div>
+          <div class="cc-row"><span class="cc-lbl">Prize Est.</span><span class="cc-val" style="color:var(--green)">₹{{ s.prize_total }}</span></div>
+          <div class="cc-row"><span class="cc-lbl">Trend</span><span class="trend {{ s.trend }}">{% if s.trend=='up' %}↑ Rising{% elif s.trend=='dn' %}↓ Declining{% else %}→ Stable{% endif %}</span></div>
+          <div class="cc-row"><span class="cc-lbl">Verdict</span><span class="cc-val" style="color:var(--green);font-family:'Inter',sans-serif;font-size:.71rem">{% if loop.index==1 %}★ Top Pick{% elif loop.index==2 %}Recommended{% else %}Good{% endif %}</span></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="font-size:.74rem;font-weight:600;color:var(--gold);margin:.5rem 0">🟡 Historic High-Win Stores</div>
+    <div class="cmp-grid">
+      {% for s in historic_stores[:3] %}
+      <div class="cc hist">
+        <div class="cc-head"><span class="cc-name">{{ s.name }}</span><span class="sbadge inactive">Inactive</span></div>
+        <div class="cc-body">
+          <div class="cc-row"><span class="cc-lbl">Agency</span><span class="cc-val">{{ s.agency }}</span></div>
+          <div class="cc-row"><span class="cc-lbl">Location</span><span class="cc-val" style="font-family:'Inter',sans-serif;font-size:.71rem">{{ s.place }}, {{ s.district }}</span></div>
+          <div class="cc-row"><span class="cc-lbl">Historic Wins</span><span class="cc-val" style="color:var(--purple)">{{ s.wins }}</span></div>
+          <div class="cc-row"><span class="cc-lbl">Trend</span><span class="trend inactive">— Inactive</span></div>
+          <div class="cc-row"><span class="cc-lbl">Note</span><span class="cc-val" style="color:var(--text3);font-family:'Inter',sans-serif;font-size:.7rem">{{ s.recommend }}</span></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ══ ADD RESULT ══════════════════════════════════════════════════ -->
+  <div class="sec" id="sec-addresult">
+    <div class="notice info"><span style="flex-shrink:0">➕</span><span><strong style="color:var(--blue)">Add every Monday's result here after 4:30 PM.</strong> Saves to lottery_results.xlsx and re-trains the ML model automatically on next page load. <strong>Next draw: BT-55 · Monday 26 May 2026.</strong></span></div>
+    <div class="panel">
+      <div class="ph">
+        <h2>➕ Add New Draw Result to Database</h2>
+        <div style="display:flex;gap:.5rem;align-items:center">
+          <div class="live-check-btn" onclick="liveCheck()">📡 Check Live Result</div>
+          <span class="badge">Saves to lottery_results.xlsx</span>
+        </div>
+      </div>
+      <div id="live-result-bar" style="display:none;padding:.55rem 1.1rem;background:var(--green-dim);border-bottom:1px solid rgba(16,185,129,.2);font-size:.73rem;color:var(--green)"></div>
+      <div class="form-grid">
+        <div class="field"><label>Draw Date</label><input type="date" id="f-date"/></div>
+        <div class="field"><label>Draw Number (e.g. BT-55)</label><input type="text" id="f-draw" placeholder="BT-55"/></div>
+        <div class="field"><label>Series Letter (e.g. BW)</label><input type="text" id="f-series" placeholder="BW" maxlength="3"/></div>
+        <div class="field"><label>1st Prize Number</label><input type="text" id="f-fp" placeholder="788952" maxlength="6"/></div>
+        <div class="field"><label>1st Prize Agent Name</label><input type="text" id="f-ag1" placeholder="NIZAR K H"/></div>
+        <div class="field"><label>1st Prize Agency No.</label><input type="text" id="f-an1" placeholder="K 6058"/></div>
+        <div class="field"><label>1st Prize Place</label><input type="text" id="f-pl1" placeholder="Vaikkom"/></div>
+        <div class="field"><label>1st Prize District</label><input type="text" id="f-di1" placeholder="Kottayam"/></div>
+        <div class="field"><label>2nd Prize Number</label><input type="text" id="f-sp" placeholder="441141" maxlength="6"/></div>
+        <div class="field"><label>2nd Prize Agent Name</label><input type="text" id="f-ag2" placeholder="ATHUL SAJIMON"/></div>
+        <div class="field"><label>2nd Prize Agency No.</label><input type="text" id="f-an2" placeholder="K 9170"/></div>
+        <div class="field"><label>2nd Prize Place</label><input type="text" id="f-pl2" placeholder="Vaikkom"/></div>
+        <div class="field" style="grid-column:1"><label>2nd Prize District</label><input type="text" id="f-di2" placeholder="Kottayam"/></div>
+      </div>
+      <div class="form-foot">
+        <div class="form-msg" id="form-msg">Fill all fields — ML model will re-train on next page load after saving.</div>
+        <button class="submit-btn" onclick="submitResult()">💾 Save & Re-train ML Model</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ AI ASSISTANT ════════════════════════════════════════════════ -->
+  <div class="sec" id="sec-ai">
+    <div class="chat-layout">
+      <div class="chat-panel">
+        <div class="ph"><h2>🤖 KLIntel AI — Free Intelligent Assistant</h2><span class="badge" id="ai-badge">Groq · Llama 3.3 · Free Forever</span></div>
+        <div class="chat-msgs" id="chat-msgs">
+          <div class="msg sys"><div class="bubble">🤖 KLIntel AI — Groq Llama 3.3 70B · Free forever · No credit card</div></div>
+          <div class="msg ai">
+            <div class="msg-lbl">KLIntel AI</div>
+            <div class="bubble">Hello! I'm your Kerala Lottery Intelligence assistant, powered by <strong>Groq's free Llama 3.3 70B</strong>.<br><br>I know about:<br>• All {{ total }} draws in your database ({{ years[0] }}–{{ years[-1] }})<br>• The 5-component ML ensemble model<br>• Why 23 May had no Bhagyathara (it was Vishu Bumper)<br>• Current store rankings vs historic winners<br>• How to add BT-55 result after 26 May 3PM<br><br>👉 Add your free Groq API key in the panel → to activate. Get it free at <strong>console.groq.com</strong></div>
+          </div>
+        </div>
+        <div class="chat-bottom">
+          <div class="quick-btns">
+            <div class="qbtn" onclick="quickAsk('Why was there no Bhagyathara result on 23 May 2026?')">❓ 23 May result?</div>
+            <div class="qbtn" onclick="quickAsk('What are the ML predicted numbers for BT-55 next Monday?')">🧠 BT-55 prediction</div>
+            <div class="qbtn" onclick="quickAsk('Which series letter is most likely for BT-55?')">🔡 BT-55 series</div>
+            <div class="qbtn" onclick="quickAsk('Compare current top stores — where should I buy my ticket?')">🏪 Best store</div>
+            <div class="qbtn" onclick="quickAsk('How does the 5-component ML ensemble model work?')">🧠 ML model</div>
+            <div class="qbtn" onclick="quickAsk('How do I add the BT-55 result after Monday draw?')">➕ Add result</div>
+          </div>
+          <div class="chat-row">
+            <textarea class="chat-in" id="chat-in" placeholder="Ask about BT-55, ML predictions, stores, patterns…" rows="1"></textarea>
+            <button class="send-btn" id="send-btn" onclick="sendMsg()">Send ↗</button>
+          </div>
+        </div>
+      </div>
+      <div class="stack">
+        <div class="key-panel">
+          <div class="free-badge">✓ 100% Free Forever · No Credit Card</div>
+          <h3>Activate AI — Groq API Key</h3>
+          <p>Groq gives <strong style="color:var(--green)">Llama 3.3 70B free forever</strong> — 14,400 requests/day, no trial, no card.</p>
+          <ul class="step-list">
+            <li data-n="1">Go to <a href="https://console.groq.com" target="_blank">console.groq.com</a></li>
+            <li data-n="2">Sign up free (Google or email)</li>
+            <li data-n="3">"API Keys" → Create new key</li>
+            <li data-n="4">Paste key below and save</li>
+          </ul>
+          <input class="key-in" id="groq-key" type="password" placeholder="gsk_xxxxxxxxxxxxxxxxxxxx"/>
+          <button class="save-btn" onclick="saveKey()">✓ Save & Activate AI</button>
+          <div id="key-msg" style="margin-top:.4rem;font-size:.66rem;color:var(--text3)"></div>
+        </div>
+        <div class="sug-panel">
+          <h3>💡 Suggested Questions</h3>
+          <div class="sug-item" onclick="quickAsk('Why did the app show BT-54 as latest instead of a 23 May result?')">Why show BT-54 not 23 May?</div>
+          <div class="sug-item" onclick="quickAsk('What is the top ML predicted number for BT-55 and why?')">Top ML pick for BT-55?</div>
+          <div class="sug-item" onclick="quickAsk('Which position in the 6-digit number has the most predictable pattern?')">Most predictable position?</div>
+          <div class="sug-item" onclick="quickAsk('Should I buy from NIZAR K H or SURESH KUMAR P for BT-55?')">NIZAR K H vs SURESH KUMAR P?</div>
+          <div class="sug-item" onclick="quickAsk('What does Markov chain analysis say about BT-55?')">Markov chain analysis?</div>
+          <div class="sug-item" onclick="quickAsk('How do I update the database daily with new results?')">Daily update workflow?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </main>
 
+<!-- ═══ SCRIPTS ════════════════════════════════════════════════════════ -->
 <script>
-// Countdown timer
+/* ── NAV ──────────────────────────────────────────────────────────── */
+const NAV={dashboard:{t:'Dashboard',s:'/ Overview'},results:{t:'All Results',s:'/ Full Database'},predictions:{t:'ML Predictions',s:'/ Ensemble Model'},analysis:{t:'Pattern Analysis',s:'/ Auto-Analysis'},stores:{t:'Top Stores',s:'/ Auto-Ranked'},compare:{t:'Compare Stores',s:'/ Current vs Historic'},addresult:{t:'Add New Result',s:'/ Update Database'},ai:{t:'AI Assistant',s:'/ Free · Groq'}};
+function showSec(id){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  const el=document.getElementById('sec-'+id);
+  if(el)el.classList.add('active');
+  const ni=document.querySelector('[data-sec="'+id+'"]');
+  if(ni)ni.classList.add('active');
+  document.getElementById('pg-title').textContent=(NAV[id]||{}).t||id;
+  document.getElementById('pg-sub').textContent=(NAV[id]||{}).s||'';
+  if(id==='analysis')renderCharts();
+}
+document.querySelectorAll('.ni').forEach(el=>el.addEventListener('click',()=>showSec(el.dataset.sec)));
+
+/* ── COUNTDOWN ────────────────────────────────────────────────────── */
 (function(){
-  const now = new Date();
-  const day = now.getDay();
-  const daysToMon = day === 0 ? 1 : (8 - day) % 7 || 7;
-  const nextMon = new Date(now);
-  nextMon.setDate(now.getDate() + daysToMon);
-  nextMon.setHours(15, 0, 0, 0);
-
-  function pad(n){ return String(n).padStart(2,'0'); }
-
+  // BT-55 is Monday 26 May 2026 at 3PM IST
+  const target=new Date('2026-05-26T15:00:00+05:30');
+  const pad=n=>String(n).padStart(2,'0');
   function tick(){
-    const diff = nextMon - new Date();
-    if(diff <= 0) return;
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff % 86400000) / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    document.getElementById('cd-days').textContent = pad(d);
-    document.getElementById('cd-hrs').textContent = pad(h);
-    document.getElementById('cd-mins').textContent = pad(m);
-    document.getElementById('cd-secs').textContent = pad(s);
+    const diff=target-new Date();
+    if(diff<=0){['cd-d','cd-h','cd-m','cd-s'].forEach(id=>document.getElementById(id).textContent='00');return;}
+    document.getElementById('cd-d').textContent=pad(Math.floor(diff/86400000));
+    document.getElementById('cd-h').textContent=pad(Math.floor(diff%86400000/3600000));
+    document.getElementById('cd-m').textContent=pad(Math.floor(diff%3600000/60000));
+    document.getElementById('cd-s').textContent=pad(Math.floor(diff%60000/1000));
   }
-  tick();
-  setInterval(tick, 1000);
+  tick();setInterval(tick,1000);
 })();
 
-// District bars
-(function(){
-  const data = {{ district_data|safe }};
-  const max = Math.max(...Object.values(data));
-  const container = document.getElementById('dist-bars');
-  const colors = ['var(--blue)','var(--green)','var(--gold)','var(--purple)','var(--red)','var(--blue)','var(--green)','var(--gold)'];
-  Object.entries(data).forEach(([dist, count], i) => {
-    const pct = Math.round(count / max * 100);
-    container.innerHTML += `<div class="dist-row">
-      <div class="dist-label">${dist}</div>
-      <div class="dist-bar-wrap"><div class="dist-bar" style="width:${pct}%;background:${colors[i%colors.length]}"></div></div>
-      <div class="dist-count">${count}</div>
-    </div>`;
+/* ── CHARTS ───────────────────────────────────────────────────────── */
+const DIST_DATA={{ district_data|safe }};
+const SER_DATA={{ series_data|safe }};
+const COLORS=['#3b82f6','#10b981','#f0b429','#8b5cf6','#ef4444','#f97316','#06b6d4','#84cc16'];
+function makeBar(id,data,monoLabel=false,color=null){
+  const c=document.getElementById(id);
+  if(!c||c.innerHTML!=='')return;
+  const max=Math.max(...Object.values(data),1);
+  Object.entries(data).forEach(([lbl,val],i)=>{
+    const pct=Math.round(val/max*100);
+    const cl=color||COLORS[i%COLORS.length];
+    c.innerHTML+=`<div class="barrow"><div class="barlabel${monoLabel?' mono':''}">${lbl}</div><div class="barwrap"><div class="barfill" style="width:${pct}%;background:${cl}"></div></div><div class="barcount">${Math.round(val)}</div></div>`;
   });
-})();
+}
+let chartsOk=false;
+function renderCharts(){if(chartsOk)return;chartsOk=true;makeBar('bar-dist',DIST_DATA);makeBar('bar-ser',SER_DATA,true,'#8b5cf6');}
 
-// Nav items
-document.querySelectorAll('.nav-item').forEach(el => {
-  el.addEventListener('click', function(){
-    document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-    this.classList.add('active');
-  });
-});
+/* ── LIVE CHECK ───────────────────────────────────────────────────── */
+async function liveCheck(){
+  const bar=document.getElementById('live-result-bar');
+  bar.style.display='block';
+  bar.textContent='📡 Checking keralalotteries.net for latest result…';
+  try{
+    const r=await fetch('/api/live_check');
+    const d=await r.json();
+    if(d.scraped&&d.scraped.raw){
+      bar.textContent='✓ Found latest result: '+d.scraped.raw+' — copy the number above into the form!';
+      bar.style.background='rgba(16,185,129,.12)';
+    } else if(d.is_result_day){
+      bar.textContent='📡 Today is draw day — result should be available after 4:30 PM. Try again later.';
+    } else {
+      bar.textContent='ℹ️ Next Bhagyathara draw is BT-55 on Monday 26 May 2026 at 3 PM. No new result yet.';
+    }
+  } catch(e){
+    bar.textContent='⚠️ Could not reach result site. Fill the form manually from keralalotteryresult.net';
+  }
+}
+
+/* ── ADD RESULT ───────────────────────────────────────────────────── */
+async function submitResult(){
+  const g=id=>document.getElementById(id).value.trim();
+  const fields={Date:g('f-date'),Draw:g('f-draw'),Series:g('f-series'),FirstPrize:g('f-fp'),Agent1:g('f-ag1'),AgencyNo1:g('f-an1'),Place1:g('f-pl1'),District1:g('f-di1'),SecondPrize:g('f-sp'),Agent2:g('f-ag2'),AgencyNo2:g('f-an2'),Place2:g('f-pl2'),District2:g('f-di2')};
+  if(Object.values(fields).some(v=>!v)){setFMsg('⚠️ Fill all fields.','var(--red)');return;}
+  setFMsg('Saving…','var(--blue)');
+  try{
+    const r=await fetch('/api/add_result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(fields)});
+    const d=await r.json();
+    if(d.ok){setFMsg(`✓ ${d.draw} saved! Total: ${d.total_rows} draws. Reload page → ML model re-trains automatically.`,'var(--green)');['f-date','f-draw','f-series','f-fp','f-ag1','f-an1','f-pl1','f-di1','f-sp','f-ag2','f-an2','f-pl2','f-di2'].forEach(id=>document.getElementById(id).value='');}
+    else setFMsg('❌ '+( d.error||'Error'),'var(--red)');
+  } catch(e){setFMsg('❌ Network error','var(--red)');}
+}
+function setFMsg(m,c){const el=document.getElementById('form-msg');el.textContent=m;el.style.color=c;}
+
+/* ── AI CHAT ──────────────────────────────────────────────────────── */
+let gKey=localStorage.getItem('kli_key')||'';
+if(gKey){document.getElementById('groq-key').value=gKey;markKeyOk();}
+function saveKey(){const k=document.getElementById('groq-key').value.trim();if(!k){setKMsg('Enter your Groq key.','var(--red)');return;}gKey=k;localStorage.setItem('kli_key',k);markKeyOk();}
+function markKeyOk(){setKMsg('✓ Active!','var(--green)');document.getElementById('ai-badge').textContent='Groq · Llama 3.3 · ✓ Active';document.getElementById('ai-badge').style.color='var(--green)';}
+function setKMsg(m,c){const el=document.getElementById('key-msg');el.textContent=m;el.style.color=c;}
+
+const SYS=`You are KLIntel AI v3, expert assistant for Kerala Lottery Analytics.
+
+IMPORTANT FACTS:
+- 23 May 2026 was the Vishu Bumper BR-109 draw — NOT a Bhagyathara draw
+- Bhagyathara draws ONLY happen on Mondays
+- Latest Bhagyathara: BT-54 on 18 May 2026 — 1st prize BW 788952 (NIZAR K H, Vaikkom)
+- Next Bhagyathara: BT-55 on Monday 26 May 2026 at 3:00 PM IST
+- Database: {{ total }} draws loaded ({{ years[0] }}–{{ years[-1] }})
+
+ML MODEL (5 components):
+1. Digit Frequency — recency-weighted 3x
+2. Position Analysis — each of 6 positions analysed independently
+3. Markov Chain — digit-to-digit transition probabilities
+4. Ending Pair Bias — last 2 digits get 3x weight
+5. Series Rotation — letter frequency + rotation pattern
+
+BT-55 ML PREDICTIONS ({{ next_draw }}):
+{% for p in predictions[:6] %}- {{ p.number }} {{ p.series }} — ML score {{ p.score }}%
+{% endfor %}
+HOT PATTERNS from {{ total }} draws:
+- Hot digits: {{ hot_digits|join(', ') }}
+- Cold digits: {{ cold_digits|join(', ') }}
+- Hot series: {{ hot_series|join(', ') }}
+- Hot endings: {{ hot_endings|join(', ') }}
+
+CURRENT TOP STORES:
+{% for s in top_stores[:5] %}- {{ loop.index }}. {{ s.name }} ({{ s.agency }}) {{ s.place }} — {{ s.wins }} wins — {{ s.trend }}
+{% endfor %}
+HISTORIC (inactive): GOPINATHAN K 18 wins retired | MARY JOSEPH 15 wins closed 2022
+
+PRIZES: 1st ₹1Cr | 2nd ₹30L | 3rd ₹5L | 4th ₹5K | 5th ₹2K | 6th ₹1K | 7th ₹500 | 8th ₹200 | 9th ₹100
+Ticket: ₹50 | 108 lakh tickets per draw | 12 series | Drawn Gorky Bhavan, Thiruvananthapuram
+
+DAILY UPDATE WORKFLOW: After each Monday 3PM draw, go to "Add New Result" page, enter the official result, save. ML model re-trains automatically on next page load.
+
+Always remind users lottery is random — ML predictions are statistical patterns only, not guaranteed wins.`;
+
+const hist=[];
+async function sendMsg(){
+  const inp=document.getElementById('chat-in');
+  const msg=inp.value.trim();
+  if(!msg)return;
+  if(!gKey){addMsg('sys','⚠️ Add your free Groq API key in the setup panel first. Get it free at console.groq.com');return;}
+  inp.value='';inp.style.height='auto';
+  addMsg('user',msg);hist.push({role:'user',content:msg});
+  const typ=addTyping();
+  document.getElementById('send-btn').disabled=true;
+  try{
+    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+gKey},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:SYS},...hist.slice(-12)],max_tokens:650,temperature:0.65})});
+    typ.remove();
+    if(!r.ok){const e=await r.json().catch(()=>({}));if(r.status===401){setKMsg('❌ Invalid key','var(--red)');addMsg('sys','❌ Invalid API key.');}else addMsg('sys','⚠️ Error '+r.status+': '+(e.error?.message||'Unknown'));return;}
+    const d=await r.json();const rep=d.choices[0].message.content;
+    hist.push({role:'assistant',content:rep});addMsg('ai',rep);
+  }catch(e){typ.remove();addMsg('sys','⚠️ Network error.');}
+  finally{document.getElementById('send-btn').disabled=false;}
+}
+function addMsg(role,text){
+  const box=document.getElementById('chat-msgs');const div=document.createElement('div');div.className='msg '+role;
+  if(role==='sys'){div.innerHTML=`<div class="bubble">${text}</div>`;}
+  else{const lbl=role==='user'?'You':'KLIntel AI';div.innerHTML=`<div class="msg-lbl">${lbl}</div><div class="bubble">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`;}
+  box.appendChild(div);box.scrollTop=box.scrollHeight;return div;
+}
+function addTyping(){const box=document.getElementById('chat-msgs');const div=document.createElement('div');div.className='msg ai';div.innerHTML=`<div class="msg-lbl">KLIntel AI</div><div class="typing-w"><span></span><span></span><span></span></div>`;box.appendChild(div);box.scrollTop=box.scrollHeight;return div;}
+function quickAsk(q){showSec('ai');setTimeout(()=>{document.getElementById('chat-in').value=q;sendMsg();},100);}
+document.getElementById('chat-in').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}});
+document.getElementById('chat-in').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,92)+'px';});
 </script>
 </body>
 </html>
